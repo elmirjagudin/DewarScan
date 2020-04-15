@@ -18,7 +18,8 @@ public class MainActivity extends AppCompatActivity {
     static final int PERM_REQ = 0;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
@@ -61,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, ScanActivity.class));
     }
 
-    public void login(View v) {
+    public void login(View v)
+    {
         startActivity(new Intent(this, LoginActivity.class));
     }
 }

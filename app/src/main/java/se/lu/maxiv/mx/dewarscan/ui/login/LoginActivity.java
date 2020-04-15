@@ -3,7 +3,7 @@ package se.lu.maxiv.mx.dewarscan.ui.login;
 import android.app.Activity;
 
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Bundle;
 
@@ -22,30 +22,36 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import se.lu.maxiv.mx.dewarscan.PersistedState;
 import se.lu.maxiv.mx.dewarscan.R;
-import se.lu.maxiv.mx.dewarscan.ui.login.LoginViewModel;
-import se.lu.maxiv.mx.dewarscan.ui.login.LoginViewModelFactory;
+import se.lu.maxiv.mx.dewarscan.data.LoginCredentials;
 
-public class LoginActivity extends AppCompatActivity {
-
+public class LoginActivity extends AppCompatActivity
+{
     private LoginViewModel loginViewModel;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory())
-                .get(LoginViewModel.class);
+
+        /* setup our view model */
+        LoginViewModelFactory factory = new LoginViewModelFactory(new PersistedState(this));
+        loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
+
         final Button loginButton = findViewById(R.id.login);
         final ProgressBar loadingProgressBar = findViewById(R.id.loading);
 
-        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
+        loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>()
+        {
             @Override
-            public void onChanged(@Nullable LoginFormState loginFormState) {
-                if (loginFormState == null) {
+            public void onChanged(@Nullable LoginFormState loginFormState)
+            {
+                if (loginFormState == null)
+                {
                     return;
                 }
                 loginButton.setEnabled(loginFormState.isDataValid());
@@ -68,13 +74,15 @@ public class LoginActivity extends AppCompatActivity {
                 if (loginResult.getError() != null) {
                     showLoginFailed(loginResult.getError());
                 }
-                if (loginResult.getSuccess() != null) {
-                    updateUiWithUser(loginResult.getSuccess());
-                }
-                setResult(Activity.RESULT_OK);
 
-                //Complete and destroy login activity once successful
-                finish();
+                if (loginResult.getSuccess() != null)
+                {
+                    updateUiWithUser(loginResult.getSuccess());
+                    setResult(Activity.RESULT_OK);
+
+                    /* complete and destroy login activity once successful */
+                    finish();
+                }
             }
         });
 
@@ -117,6 +125,22 @@ public class LoginActivity extends AppCompatActivity {
                         passwordEditText.getText().toString());
             }
         });
+
+        showPersistedCredentials(usernameEditText, passwordEditText, loginViewModel.getLoginCredentials());
+    }
+
+    /**
+     * update text widget with persisted username and password, if we have persisted state
+     */
+    void showPersistedCredentials(EditText username, EditText password, LoginCredentials credentials)
+    {
+        if (credentials == null)
+        {
+            return;
+        }
+
+        username.setText(credentials.getUsername());
+        password.setText(credentials.getPassword());
     }
 
     private void updateUiWithUser(LoggedInUserView model) {

@@ -6,22 +6,30 @@ import androidx.lifecycle.ViewModel;
 
 import android.util.Patterns;
 
+import se.lu.maxiv.mx.dewarscan.data.LoginCredentials;
 import se.lu.maxiv.mx.dewarscan.data.LoginRepository;
 import se.lu.maxiv.mx.dewarscan.data.Result;
 import se.lu.maxiv.mx.dewarscan.data.model.LoggedInUser;
 import se.lu.maxiv.mx.dewarscan.R;
 
-public class LoginViewModel extends ViewModel {
+public class LoginViewModel extends ViewModel
+{
+    MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
+    MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
+    LoginRepository loginRepository;
 
-    private MutableLiveData<LoginFormState> loginFormState = new MutableLiveData<>();
-    private MutableLiveData<LoginResult> loginResult = new MutableLiveData<>();
-    private LoginRepository loginRepository;
-
-    LoginViewModel(LoginRepository loginRepository) {
+    LoginViewModel(LoginRepository loginRepository)
+    {
         this.loginRepository = loginRepository;
     }
 
-    LiveData<LoginFormState> getLoginFormState() {
+    LoginCredentials getLoginCredentials()
+    {
+        return loginRepository.getLoginCredentials();
+    }
+
+    LiveData<LoginFormState> getLoginFormState()
+    {
         return loginFormState;
     }
 
