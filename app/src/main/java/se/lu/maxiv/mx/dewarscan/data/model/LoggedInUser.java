@@ -3,21 +3,17 @@ package se.lu.maxiv.mx.dewarscan.data.model;
 /**
  * Data class that captures user information for logged in users retrieved from LoginRepository
  */
-public class LoggedInUser {
+public class LoggedInUser
+{
+    private String authToken;
+    private String username;
 
-    private String userId;
-    private String displayName;
-
-    public LoggedInUser(String userId, String displayName) {
-        this.userId = userId;
-        this.displayName = displayName;
+    public LoggedInUser(String authToken, String username)
+    {
+        this.authToken = authToken;
+        this.username = username;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
+    public String getAuthToken() { return authToken; }
+    public String getUsername() { return username; }
 }

@@ -27,6 +27,8 @@ public class PersistedState
         this.context = context;
     }
 
+    // If user credentials will be cached in local storage, it is recommended it be encrypted
+    // @see https://developer.android.com/training/articles/keystore
     public void setUsernamePassword(String username, String password)
     {
         SharedPreferences.Editor editor = getEditor();
@@ -34,6 +36,13 @@ public class PersistedState
         editor.putString(PersistedState.USERNAME, username);
         editor.putString(PersistedState.PASSWORD, password);
 
+        editor.commit();
+    }
+
+    public void forgetPassword()
+    {
+        SharedPreferences.Editor editor = getEditor();
+        editor.remove(PersistedState.PASSWORD);
         editor.commit();
     }
 

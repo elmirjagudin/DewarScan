@@ -24,20 +24,66 @@ import android.widget.Toast;
 
 import se.lu.maxiv.mx.dewarscan.PersistedState;
 import se.lu.maxiv.mx.dewarscan.R;
+import se.lu.maxiv.mx.dewarscan.data.DuoSession;
 import se.lu.maxiv.mx.dewarscan.data.LoginCredentials;
 
 public class LoginActivity extends AppCompatActivity
 {
-    private LoginViewModel loginViewModel;
+    LoginViewModel loginViewModel;
+
+    boolean loginWithPersisted()
+    {
+        LoginCredentials creds = loginViewModel.getLoginCredentials();
+        if (creds == null)
+        {
+            /* no persisted credentials */
+            return false;
+        }
+
+        if (creds.getPassword() == null)
+        {
+            /* password not persisted */
+            return false;
+        }
+
+        loginViewModel.login(creds.getUsername(), creds.getPassword());
+
+        return DuoSession.loggedIn();
+    }
+
+    void finish_success()
+    {
+        setResult(Activity.RESULT_OK);
+        finish();
+    }
+
+    boolean getForgetPasswordArg()
+    {
+        return getIntent().getBooleanExtra(getPackageName() + "ForgetPassword", false);
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
 
         /* setup our view model */
         LoginViewModelFactory factory = new LoginViewModelFactory(new PersistedState(this));
         loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
+
+        boolean forgetPassword = getForgetPasswordArg();
+        if (forgetPassword)
+        {
+            loginViewModel.forgetPassword();
+        }
+
+        /* try to 'auto-login' with persisted credentials, if any */
+        if (loginWithPersisted())
+        {
+            /* great success, we are done with this activity */
+            finish_success();
+        }
+
+        setContentView(R.layout.activity_login);
 
         final EditText usernameEditText = findViewById(R.id.username);
         final EditText passwordEditText = findViewById(R.id.password);
@@ -77,25 +123,18 @@ public class LoginActivity extends AppCompatActivity
 
                 if (loginResult.getSuccess() != null)
                 {
-                    updateUiWithUser(loginResult.getSuccess());
-                    setResult(Activity.RESULT_OK);
-
                     /* complete and destroy login activity once successful */
-                    finish();
+                    finish_success();
                 }
             }
         });
 
         TextWatcher afterTextChangedListener = new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                // ignore
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { /* nop */ }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                // ignore
-            }
+            public void onTextChanged(CharSequence s, int start, int before, int count) { /* nop */ }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -141,12 +180,6 @@ public class LoginActivity extends AppCompatActivity
 
         username.setText(credentials.getUsername());
         password.setText(credentials.getPassword());
-    }
-
-    private void updateUiWithUser(LoggedInUserView model) {
-        String welcome = getString(R.string.welcome) + model.getDisplayName();
-        // TODO : initiate successful logged in experience
-        Toast.makeText(getApplicationContext(), welcome, Toast.LENGTH_LONG).show();
     }
 
     private void showLoginFailed(@StringRes Integer errorString) {

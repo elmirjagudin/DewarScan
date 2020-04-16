@@ -1,4 +1,4 @@
-package se.lu.maxiv.mx.dewarscan;
+package se.lu.maxiv.mx.dewarscan.ui.main;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -9,23 +9,57 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import se.lu.maxiv.mx.dewarscan.R;
+import se.lu.maxiv.mx.dewarscan.ScanActivity;
+import se.lu.maxiv.mx.dewarscan.data.DuoSession;
 import se.lu.maxiv.mx.dewarscan.ui.login.LoginActivity;
 import static se.lu.maxiv.mx.dewarscan.LogTag.TAG;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+{
     static final int PERM_REQ = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
     }
 
-    public void scan(View v) {
+    @Override
+    public void onStart()
+    {
+        super.onStart();
+
+        if (!DuoSession.loggedIn())
+        {
+            startLoginActivity(false);
+            return;
+        }
+
+        final TextView username = findViewById(R.id.username);
+        username.setText(DuoSession.getUser().getUsername());
+    }
+
+    void startLoginActivity(boolean forgetPassword)
+    {
+        Intent i = new Intent(this, LoginActivity.class);
+
+        i.putExtra(getPackageName() + "ForgetPassword", forgetPassword);
+        startActivity(i);
+    }
+
+    public void logout(View v)
+    {
+        DuoSession.logout();
+        startLoginActivity(true);
+    }
+
+    public void scan(View v)
+    {
         /*
          * request camera permission,
          * if the app already have camera permission,
@@ -60,10 +94,5 @@ public class MainActivity extends AppCompatActivity {
 
         /* we know that we have CAMERA permission now, goto scan activity */
         startActivity(new Intent(this, ScanActivity.class));
-    }
-
-    public void login(View v)
-    {
-        startActivity(new Intent(this, LoginActivity.class));
     }
 }
