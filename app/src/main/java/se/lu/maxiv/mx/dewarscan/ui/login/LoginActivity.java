@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import se.lu.maxiv.mx.dewarscan.IntentArgs;
 import se.lu.maxiv.mx.dewarscan.PersistedState;
 import se.lu.maxiv.mx.dewarscan.R;
 import se.lu.maxiv.mx.dewarscan.data.DuoSession;
@@ -57,11 +58,6 @@ public class LoginActivity extends AppCompatActivity
         finish();
     }
 
-    boolean getForgetPasswordArg()
-    {
-        return getIntent().getBooleanExtra(getPackageName() + "ForgetPassword", false);
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,8 +66,7 @@ public class LoginActivity extends AppCompatActivity
         LoginViewModelFactory factory = new LoginViewModelFactory(new PersistedState(this));
         loginViewModel = new ViewModelProvider(this, factory).get(LoginViewModel.class);
 
-        boolean forgetPassword = getForgetPasswordArg();
-        if (forgetPassword)
+        if (IntentArgs.getForgetPassword(this))
         {
             loginViewModel.forgetPassword();
         }

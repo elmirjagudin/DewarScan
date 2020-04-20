@@ -10,8 +10,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import se.lu.maxiv.mx.dewarscan.IntentArgs;
 import se.lu.maxiv.mx.dewarscan.R;
-import se.lu.maxiv.mx.dewarscan.ScanActivity;
+import se.lu.maxiv.mx.dewarscan.ui.ScanActivity;
 import se.lu.maxiv.mx.dewarscan.data.DuoSession;
 import se.lu.maxiv.mx.dewarscan.ui.AskPermissions;
 import se.lu.maxiv.mx.dewarscan.ui.login.LoginActivity;
@@ -61,7 +62,8 @@ public class MainActivity extends AppCompatActivity
     {
         Intent i = new Intent(this, LoginActivity.class);
 
-        i.putExtra(getPackageName() + "ForgetPassword", forgetPassword);
+        IntentArgs.setForgetPassword(this, i, forgetPassword);
+
         startActivity(i);
     }
 
@@ -71,9 +73,22 @@ public class MainActivity extends AppCompatActivity
         startLoginActivity(true);
     }
 
-    public void scan(View v)
+    public void scanArrived(View v)
     {
-        /* we know that we have CAMERA permission now, goto scan activity */
-        startActivity(new Intent(this, ScanActivity.class));
+        startScanActivity(true);
+    }
+
+    public void scanLeaving(View v)
+    {
+        startScanActivity(false);
+    }
+
+    public void startScanActivity(boolean arrived)
+    {
+        Intent i = new Intent(this, ScanActivity.class);
+
+        IntentArgs.setArrivedDewar(this, i, arrived);
+
+        startActivity(i);
     }
 }

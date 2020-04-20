@@ -1,4 +1,4 @@
-package se.lu.maxiv.mx.dewarscan;
+package se.lu.maxiv.mx.dewarscan.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,14 +10,19 @@ import android.widget.Toast;
 import com.google.zxing.Result;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
+import se.lu.maxiv.mx.dewarscan.IntentArgs;
+import se.lu.maxiv.mx.dewarscan.R;
 
 public class ScanActivity extends AppCompatActivity  implements ZXingScannerView.ResultHandler {
-    private ZXingScannerView mScannerView;
+    ZXingScannerView mScannerView;
+    boolean arrivedDewar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan);
+
+        arrivedDewar = IntentArgs.getArrivedDewar(this);
 
         ViewGroup contentFrame = findViewById(R.id.content_frame);
         mScannerView = new ZXingScannerView(this);
@@ -38,8 +43,12 @@ public class ScanActivity extends AppCompatActivity  implements ZXingScannerView
     }
 
     @Override
-    public void handleResult(Result rawResult) {
-        Toast.makeText(this, "Scanned = " + rawResult.getText() +
+    public void handleResult(Result rawResult)
+    {
+        String dir = arrivedDewar ? "ARRIVED" : "LEAVING";
+        Toast.makeText(this,
+                dir +
+                "Scanned = " + rawResult.getText() +
                 ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_LONG).show();
 
         // Note:
