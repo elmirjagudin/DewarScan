@@ -8,16 +8,17 @@ import androidx.lifecycle.ViewModelProvider;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -71,12 +72,12 @@ public class LoginActivity extends AppCompatActivity
             loginViewModel.forgetPassword();
         }
 
-        /* try to 'auto-login' with persisted credentials, if any */
-        if (loginWithPersisted())
-        {
-            /* great success, we are done with this activity */
-            finish_success();
-        }
+//        /* try to 'auto-login' with persisted credentials, if any */
+//        if (loginWithPersisted())
+//        {
+//            /* great success, we are done with this activity */
+//            finish_success();
+//        }
 
         setContentView(R.layout.activity_login);
 
@@ -112,7 +113,8 @@ public class LoginActivity extends AppCompatActivity
                     return;
                 }
                 loadingProgressBar.setVisibility(View.GONE);
-                if (loginResult.getError() != null) {
+                if (loginResult.getError() != null)
+                {
                     showLoginFailed(loginResult.getError());
                 }
 
@@ -177,7 +179,19 @@ public class LoginActivity extends AppCompatActivity
         password.setText(credentials.getPassword());
     }
 
-    private void showLoginFailed(@StringRes Integer errorString) {
-        Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_SHORT).show();
+    private void showLoginFailed(String errorDetails)
+    {
+        String text = String.format("%s\n%s", getString(R.string.login_failed), errorDetails);
+        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
+
+        /* center text inside the toast widget */
+        LinearLayout layout = (LinearLayout) toast.getView();
+        if (layout.getChildCount() > 0)
+        {
+            TextView tv = (TextView) layout.getChildAt(0);
+            tv.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL);
+        }
+
+        toast.show();
     }
 }

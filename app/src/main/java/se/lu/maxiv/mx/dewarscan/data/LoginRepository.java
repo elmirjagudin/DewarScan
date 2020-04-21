@@ -9,6 +9,11 @@ import se.lu.maxiv.mx.dewarscan.data.model.LoggedInUser;
  */
 public class LoginRepository
 {
+    public interface Listener
+    {
+        void onLoginResult(Result<LoggedInUser> result);
+    }
+
     private static volatile LoginRepository instance;
 
     PersistedState persistedState;
@@ -61,15 +66,24 @@ public class LoginRepository
         return loginCredentials;
     }
 
-    public Result<LoggedInUser> login(String username, String password)
+    public void login(final String username, final String password, final Listener listener)
     {
-        Result<LoggedInUser> result = dataSource.login(username, password);
-        if (result instanceof Result.Success)
+        persistedState.setUsernamePassword(username, password); // DEBUG - TODO remove this line
+
+        dataSource.login(username, password, new LoginDataSource.Listener()
         {
-            loginCredentials = null;
-            persistedState.setUsernamePassword(username, password);
-            DuoSession.setUser(((Result.Success<LoggedInUser>) result).getData());
-        }
-        return result;
+            @Override
+            public void onLoginResult(Result<LoggedInUser> result)
+            {
+                if (result instanceof Result.Success)
+                {
+                    loginCredentials = null;
+                    persistedState.setUsernamePassword(username, password);
+                    DuoSession.setUser(((Result.Success<LoggedInUser>) result).getData());
+                }
+
+                listener.onLoginResult(result);
+            }
+        });
     }
 }
