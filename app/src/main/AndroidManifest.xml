@@ -17,7 +17,9 @@
 
         <activity
             android:name=".ui.ScanActivity"
-            android:parentActivityName=".ui.main.MainActivity">
+            android:screenOrientation="portrait"
+            android:parentActivityName=".ui.main.MainActivity"
+            tools:ignore="LockedOrientationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="se.lu.maxiv.mx.dewarscan.ui.main.MainActivity" />
