@@ -6,6 +6,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.HttpHeaderParser;
 
+import se.lu.maxiv.mx.dewarscan.ISPyB;
 import se.lu.maxiv.mx.dewarscan.NetworkReqs;
 import se.lu.maxiv.mx.dewarscan.data.model.LoggedInUser;
 
@@ -23,46 +24,11 @@ import org.json.JSONObject;
  */
 public class LoginDataSource
 {
-    static final String ISPYB_AUTH_HOST = "ispyb.maxiv.lu.se";
-    static final String ISPYB_AUTH_SITE = "MAXIV";
     static final String EXPECTED_ERR_PATTERN = "^JBAS011843: Failed instantiate.*ldap.*ispyb.*";
-
-    static String getAuthUrl()
-    {
-        return String.format(
-                "https://%s/ispyb/ispyb-ws/rest/authenticate?site=%s",
-                ISPYB_AUTH_HOST, ISPYB_AUTH_SITE);
-    }
 
     public interface Listener
     {
         void onLoginResult(Result<LoggedInUser> result);
-    }
-
-    /**
-     * Convert ValleyError exception to an error message for the UI
-     */
-    static String ErrorMsg(VolleyError error)
-    {
-        String msg = error.getMessage();
-        if (msg != null)
-        {
-            /* we have hopefully a usefull error message for the user */
-            return msg;
-        }
-
-        NetworkResponse resp = error.networkResponse;
-        if (resp != null)
-        {
-            /*
-             * unexpected reply from the server,
-             * show reply to the user, to help with troubleshooting
-             */
-            return String.format("status code: %d\nbody %s", resp.statusCode, new String(resp.data));
-        }
-
-        /* last ditch effort, dump the exception to the user */
-        return error.toString();
     }
 
 
@@ -75,12 +41,12 @@ public class LoginDataSource
 
         AuthRequest(String username, String password, final Listener listener)
         {
-            super(Method.POST, getAuthUrl(), new Response.ErrorListener()
+            super(Method.POST, ISPyB.getAuthUrl(), new Response.ErrorListener()
             {
                 @Override
                 public void onErrorResponse(VolleyError error)
                 {
-                     listener.onLoginResult(new Result.Error(ErrorMsg(error)));
+                     listener.onLoginResult(new Result.Error(ISPyB.ErrorMsg(error)));
                 }
             });
 

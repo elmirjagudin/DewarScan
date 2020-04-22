@@ -10,6 +10,7 @@ import android.widget.Toast;
 import com.google.zxing.Result;
 
 import me.dm7.barcodescanner.zxing.ZXingScannerView;
+import se.lu.maxiv.mx.dewarscan.Dewar;
 import se.lu.maxiv.mx.dewarscan.IntentArgs;
 import se.lu.maxiv.mx.dewarscan.R;
 
@@ -42,25 +43,42 @@ public class ScanActivity extends AppCompatActivity  implements ZXingScannerView
         mScannerView.stopCamera();
     }
 
-    @Override
-    public void handleResult(Result rawResult)
+    void ShowToast(String msg)
     {
-        String dir = arrivedDewar ? "ARRIVED" : "LEAVING";
-        Toast.makeText(this,
-                dir +
-                "Scanned = " + rawResult.getText() +
-                ", Format = " + rawResult.getBarcodeFormat().toString(), Toast.LENGTH_LONG).show();
+        Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
+    }
+
+    void registrationDone(String result)
+    {
+        ShowToast(result);
 
         // Note:
-        // * Wait 2 seconds to resume the preview.
+        // * Wait 3 seconds to resume the preview.
         // * On older devices continuously stopping and resuming camera preview can result in freezing the app.
         // * I don't know why this is the case but I don't have the time to figure out.
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        handler.postDelayed(new Runnable()
+        {
             @Override
-            public void run() {
+            public void run()
+            {
+                ShowToast("ready to scan");
                 mScannerView.resumeCameraPreview(ScanActivity.this);
             }
-        }, 2000);
+        }, 3000);
+
+    }
+
+    @Override
+    public void handleResult(Result rawResult)
+    {
+        Dewar.Register(rawResult.getText(), arrivedDewar, new Dewar.Listener()
+        {
+            @Override
+            public void onRegistrationDone(String result)
+            {
+                registrationDone(result);
+            }
+        });
     }
 }
