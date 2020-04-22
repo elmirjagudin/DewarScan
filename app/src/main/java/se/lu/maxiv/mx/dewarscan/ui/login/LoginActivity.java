@@ -26,32 +26,11 @@ import android.widget.Toast;
 import se.lu.maxiv.mx.dewarscan.IntentArgs;
 import se.lu.maxiv.mx.dewarscan.PersistedState;
 import se.lu.maxiv.mx.dewarscan.R;
-import se.lu.maxiv.mx.dewarscan.data.DuoSession;
 import se.lu.maxiv.mx.dewarscan.data.LoginCredentials;
 
 public class LoginActivity extends AppCompatActivity
 {
     LoginViewModel loginViewModel;
-
-    boolean loginWithPersisted()
-    {
-        LoginCredentials creds = loginViewModel.getLoginCredentials();
-        if (creds == null)
-        {
-            /* no persisted credentials */
-            return false;
-        }
-
-        if (creds.getPassword() == null)
-        {
-            /* password not persisted */
-            return false;
-        }
-
-        loginViewModel.login(creds.getUsername(), creds.getPassword());
-
-        return DuoSession.loggedIn();
-    }
 
     void finish_success()
     {
@@ -60,7 +39,8 @@ public class LoginActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         /* setup our view model */
@@ -71,13 +51,6 @@ public class LoginActivity extends AppCompatActivity
         {
             loginViewModel.forgetPassword();
         }
-
-//        /* try to 'auto-login' with persisted credentials, if any */
-//        if (loginWithPersisted())
-//        {
-//            /* great success, we are done with this activity */
-//            finish_success();
-//        }
 
         setContentView(R.layout.activity_login);
 
@@ -153,16 +126,49 @@ public class LoginActivity extends AppCompatActivity
             }
         });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
+        loginButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View v) {
-                loadingProgressBar.setVisibility(View.VISIBLE);
-                loginViewModel.login(usernameEditText.getText().toString(),
-                        passwordEditText.getText().toString());
+            public void onClick(View v)
+            {
+                login();
             }
         });
 
         showPersistedCredentials(usernameEditText, passwordEditText, loginViewModel.getLoginCredentials());
+        loginWithPersisted();
+    }
+
+    /**
+     * if we have persisted credentials, 'click' the login button
+     */
+    void loginWithPersisted()
+    {
+        LoginCredentials creds = loginViewModel.getLoginCredentials();
+        if (creds == null)
+        {
+            /* no persisted credentials */
+            return;
+        }
+
+        if (creds.getPassword() == null)
+        {
+            /* password not persisted */
+            return;
+        }
+
+        login();
+    }
+
+    void login()
+    {
+        final ProgressBar loadingProgressBar = findViewById(R.id.loading);
+        final EditText usernameEditText = findViewById(R.id.username);
+        final EditText passwordEditText = findViewById(R.id.password);
+
+        loadingProgressBar.setVisibility(View.VISIBLE);
+        loginViewModel.login(usernameEditText.getText().toString(),
+                passwordEditText.getText().toString());
     }
 
     /**
