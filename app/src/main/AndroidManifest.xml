@@ -18,11 +18,11 @@
         <activity
             android:name=".ui.ScanActivity"
             android:screenOrientation="portrait"
-            android:parentActivityName=".ui.main.MainActivity"
+            android:parentActivityName=".ui.MainActivity"
             tools:ignore="LockedOrientationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="se.lu.maxiv.mx.dewarscan.ui.main.MainActivity" />
+                android:value="se.lu.maxiv.mx.dewarscan.ui.MainActivity" />
         </activity>
 
         <activity android:name=".ui.AskPermissions"/>
@@ -31,7 +31,7 @@
             android:name=".ui.login.LoginActivity"
             android:label="@string/title_activity_login"/>
 
-        <activity android:name=".ui.main.MainActivity">
+        <activity android:name=".ui.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

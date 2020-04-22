@@ -1,4 +1,4 @@
-package se.lu.maxiv.mx.dewarscan.ui.main;
+package se.lu.maxiv.mx.dewarscan.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -12,9 +12,7 @@ import android.widget.TextView;
 
 import se.lu.maxiv.mx.dewarscan.IntentArgs;
 import se.lu.maxiv.mx.dewarscan.R;
-import se.lu.maxiv.mx.dewarscan.ui.ScanActivity;
 import se.lu.maxiv.mx.dewarscan.data.DuoSession;
-import se.lu.maxiv.mx.dewarscan.ui.AskPermissions;
 import se.lu.maxiv.mx.dewarscan.ui.login.LoginActivity;
 
 public class MainActivity extends AppCompatActivity
