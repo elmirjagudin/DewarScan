@@ -9,6 +9,12 @@ public class PersistedState
     static final String PASSWORD = "PASSWORD";
 
     Context context;
+    Encryptor encryptor;
+
+    public PersistedState(Context context)
+    {
+        this.context = context;
+    }
 
     SharedPreferences getPrefs()
     {
@@ -22,19 +28,23 @@ public class PersistedState
         return getPrefs().edit();
     }
 
-    public PersistedState(Context context)
+    Encryptor getEncryptor()
     {
-        this.context = context;
+        if (encryptor == null)
+        {
+            encryptor = new Encryptor(context);
+        }
+
+        return encryptor;
     }
 
-    // If user credentials will be cached in local storage, it is recommended it be encrypted
-    // @see https://developer.android.com/training/articles/keystore
     public void setUsernamePassword(String username, String password)
     {
         SharedPreferences.Editor editor = getEditor();
 
+
         editor.putString(PersistedState.USERNAME, username);
-        editor.putString(PersistedState.PASSWORD, password);
+        editor.putString(PersistedState.PASSWORD, getEncryptor().encrypt(password));
 
         editor.commit();
     }
@@ -52,6 +62,12 @@ public class PersistedState
     }
     public String getPassword()
     {
-        return getPrefs().getString(PASSWORD, null);
+        String encrypted_password = getPrefs().getString(PASSWORD, null);
+        if (encrypted_password == null)
+        {
+            return null;
+        }
+
+        return getEncryptor().decrypt(encrypted_password);
     }
 }
