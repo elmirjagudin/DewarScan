@@ -24,7 +24,7 @@ import org.json.JSONObject;
  */
 public class LoginDataSource
 {
-    static final String EXPECTED_ERR_PATTERN = "^JBAS011843: Failed instantiate.*ldap.*ispyb.*";
+    static final String EXPECTED_ERR_REGEX = "^JBAS011843: Failed instantiate.*ldap.*ispyb.*";
 
     public interface Listener
     {
@@ -73,7 +73,7 @@ public class LoginDataSource
 
         boolean expectedError(String replyBody)
         {
-            Matcher matcher = Pattern.compile(EXPECTED_ERR_PATTERN).matcher(replyBody);
+            Matcher matcher = Pattern.compile(EXPECTED_ERR_REGEX).matcher(replyBody);
             return matcher.matches();
         }
 
